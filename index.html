@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ApexTrader | Pro Paper Trading Platform & Real-Time Stock Dashboard</title>
+  <meta name="description" content="High-fidelity paper trading platform and stock market dashboard featuring live simulated execution, portfolio analytics, and interactive charts.">
+  
+  <!-- Google Fonts: Inter with Tabular Nums support -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Global App Wrapper -->
+  <div class="app-container" id="app">
+
+    <!-- TOP NAVIGATION & HEADER -->
+    <header class="top-nav" id="topNav">
+      <div class="nav-left">
+        <div class="brand-logo" id="brandLogo">
+          <div class="logo-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline>
+              <polyline points="16 7 22 7 22 13"></polyline>
+            </svg>
+          </div>
+          <div class="logo-text-group">
+            <span class="logo-title">Apex<span class="brand-accent">Trader</span></span>
+            <span class="paper-badge">PAPER TRADING</span>
+          </div>
+        </div>
+
+        <div class="market-status-pill" id="marketStatus">
+          <span class="pulse-dot"></span>
+          <span class="status-label">Market Open</span>
+          <span class="status-time" id="marketClock">NYSE 10:42:15 EDT</span>
+        </div>
+      </div>
+
+      <!-- Center Search Bar -->
+      <div class="nav-center">
+        <div class="search-container" id="searchContainer">
+          <div class="search-input-wrapper">
+            <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input 
+              type="text" 
+              id="tickerSearchInput" 
+              placeholder="Search ticker or company (e.g. NVDA, AAPL, TSLA)..." 
+              autocomplete="off" 
+              spellcheck="false"
+            >
+            <kbd class="search-shortcut">/</kbd>
+          </div>
+          <!-- Dropdown search suggestions -->
+          <div class="search-dropdown" id="searchDropdown" style="display: none;">
+            <!-- Rendered dynamically by script.js -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Account Summary KPIs -->
+      <div class="nav-right">
+        <div class="kpi-ribbon">
+          <div class="kpi-item" id="kpiVirtualCash">
+            <span class="kpi-label">Virtual Cash</span>
+            <span class="kpi-value tabular-num" id="headerCashVal">$100,000.00</span>
+          </div>
+
+          <div class="kpi-divider"></div>
+
+          <div class="kpi-item" id="kpiPortfolioValue">
+            <span class="kpi-label">Portfolio Value</span>
+            <span class="kpi-value tabular-num" id="headerPortfolioVal">$142,850.50</span>
+          </div>
+
+          <div class="kpi-divider"></div>
+
+          <div class="kpi-item" id="kpiTotalPnl">
+            <span class="kpi-label">Total P&amp;L</span>
+            <span class="kpi-value text-positive tabular-num" id="headerPnlVal">+$42,850.50 (+42.85%)</span>
+          </div>
+        </div>
+
+        <div class="header-actions">
+          <button class="btn-icon" id="btnResetPortfolio" title="Reset Portfolio to Default $100k">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+              <path d="M3 3v5h5"></path>
+            </svg>
+          </button>
+          <div class="user-avatar" title="Paper Trader Account">
+            <span>AT</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- MAIN DASHBOARD CONTENT GRID -->
+    <main class="dashboard-grid">
+
+      <!-- LEFT & CENTRAL TRADING ZONE -->
+      <section class="main-trading-zone">
+
+        <!-- 1. ACTIVE TICKER HEADER BAR -->
+        <div class="ticker-header-card" id="tickerHeader">
+          <div class="ticker-identity">
+            <div class="ticker-badge-box">
+              <span class="ticker-symbol" id="tickerSymbol">NVDA</span>
+              <span class="ticker-exchange">NASDAQ</span>
+            </div>
+            <div class="ticker-names">
+              <h1 class="ticker-company-name" id="tickerCompanyName">NVIDIA Corporation</h1>
+              <span class="ticker-sector-tag" id="tickerSector">Semiconductors &bull; Mega Cap</span>
+            </div>
+          </div>
+
+          <div class="ticker-pricing-group">
+            <div class="price-primary">
+              <span class="price-currency">$</span>
+              <span class="price-number tabular-num" id="currentStockPrice">128.50</span>
+            </div>
+            <div class="price-delta-badge positive" id="priceDeltaBadge">
+              <svg class="delta-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="18 15 12 9 6 15"></polyline>
+              </svg>
+              <span class="delta-amount tabular-num" id="dayChangeDollar">+$4.20</span>
+              <span class="delta-percent tabular-num" id="dayChangePercent">(+3.38%)</span>
+              <span class="delta-period">Today</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. INTERACTIVE CHART CARD -->
+        <div class="chart-card" id="chartCard">
+          <div class="chart-controls-bar">
+            <!-- Timeframe Selector -->
+            <div class="timeframe-selector" id="timeframeSelector" role="group" aria-label="Chart Timeframes">
+              <button class="tf-btn active" data-tf="1D">1D</button>
+              <button class="tf-btn" data-tf="1W">1W</button>
+              <button class="tf-btn" data-tf="1M">1M</button>
+              <button class="tf-btn" data-tf="1Y">1Y</button>
+              <button class="tf-btn" data-tf="ALL">ALL</button>
+            </div>
+
+            <!-- Chart Display Info / HUD -->
+            <div class="chart-hud" id="chartHud">
+              <span class="hud-item"><span class="hud-label">H:</span> <span class="hud-val tabular-num" id="chartHudHigh">$129.80</span></span>
+              <span class="hud-item"><span class="hud-label">L:</span> <span class="hud-val tabular-num" id="chartHudLow">$124.10</span></span>
+              <span class="hud-item"><span class="hud-label">Vol:</span> <span class="hud-val tabular-num" id="chartHudVol">48.2M</span></span>
+            </div>
+
+            <!-- Chart Type Switcher (Area / Candlestick) -->
+            <div class="chart-type-selector">
+              <button class="chart-type-btn active" id="btnChartTypeArea" title="Line / Area View">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M3 3v18h18"></path>
+                  <path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"></path>
+                </svg>
+              </button>
+              <button class="chart-type-btn" id="btnChartTypeCandle" title="Candlestick View">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M6 3v3m0 12v3m0-15h4v12H6zm10-3v6m0 6v3m0-9h4v6h-4z"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Canvas Interactive Chart Stage -->
+          <div class="chart-stage-wrapper" id="chartStageWrapper">
+            <canvas id="stockChartCanvas"></canvas>
+            
+            <!-- Hover Floating Tooltip HUD -->
+            <div class="chart-tooltip" id="chartTooltip" style="display: none;">
+              <div class="tooltip-price tabular-num" id="tooltipPrice">$128.50</div>
+              <div class="tooltip-meta" id="tooltipMeta">Today 02:45 PM</div>
+              <div class="tooltip-delta" id="tooltipDelta">+$4.20 (+3.38%)</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. MARKET METRICS STATS GRID -->
+        <div class="market-stats-card" id="marketStatsCard">
+          <div class="stats-section-title">
+            <h3>Key Statistics</h3>
+            <span class="stats-timestamp">Real-time simulated feed</span>
+          </div>
+          <div class="stats-grid" id="statsGrid">
+            <div class="stat-cell">
+              <span class="stat-label">52-Wk High</span>
+              <span class="stat-value tabular-num" id="stat52High">$140.76</span>
+            </div>
+            <div class="stat-cell">
+              <span class="stat-label">52-Wk Low</span>
+              <span class="stat-value tabular-num" id="stat52Low">$39.23</span>
+            </div>
+            <div class="stat-cell">
+              <span class="stat-label">Market Cap</span>
+              <span class="stat-value tabular-num" id="statMarketCap">$3.16T</span>
+            </div>
+            <div class="stat-cell">
+              <span class="stat-label">P/E Ratio (TTM)</span>
+              <span class="stat-value tabular-num" id="statPeRatio">72.4x</span>
+            </div>
+            <div class="stat-cell">
+              <span class="stat-label">Day Volume</span>
+              <span class="stat-value tabular-num" id="statDayVolume">54,320,110</span>
+            </div>
+            <div class="stat-cell">
+              <span class="stat-label">Avg Volume (30D)</span>
+              <span class="stat-value tabular-num" id="statAvgVolume">48,910,000</span>
+            </div>
+            <div class="stat-cell">
+              <span class="stat-label">Open Price</span>
+              <span class="stat-value tabular-num" id="statOpenPrice">$124.80</span>
+            </div>
+            <div class="stat-cell">
+              <span class="stat-label">Day Range</span>
+              <span class="stat-value tabular-num" id="statDayRange">$124.10 - $129.80</span>
+            </div>
+            <div class="stat-cell">
+              <span class="stat-label">Beta</span>
+              <span class="stat-value tabular-num" id="statBeta">1.68</span>
+            </div>
+            <div class="stat-cell">
+              <span class="stat-label">Div Yield</span>
+              <span class="stat-value tabular-num" id="statDivYield">0.03%</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. BOTTOM HOLDINGS & ORDER HISTORY TABS -->
+        <div class="portfolio-section-card" id="portfolioSection">
+          <div class="portfolio-tabs-header">
+            <div class="tab-buttons-group">
+              <button class="portfolio-tab-btn active" id="tabBtnHoldings" data-target="panelHoldings">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                </svg>
+                <span>Active Holdings</span>
+                <span class="badge-count" id="holdingsBadgeCount">3</span>
+              </button>
+              <button class="portfolio-tab-btn" id="tabBtnHistory" data-target="panelHistory">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+                <span>Order History</span>
+                <span class="badge-count" id="historyBadgeCount">3</span>
+              </button>
+              <button class="portfolio-tab-btn" id="tabBtnWatchlist" data-target="panelWatchlist">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                </svg>
+                <span>Watchlist</span>
+                <span class="badge-count" id="watchlistBadgeCount">8</span>
+              </button>
+            </div>
+            
+            <div class="portfolio-table-actions">
+              <span class="table-info-note">Live Unrealized Portfolio Positions</span>
+            </div>
+          </div>
+
+          <!-- Tab Panel: Holdings -->
+          <div class="tab-panel active" id="panelHoldings">
+            <div class="table-responsive">
+              <table class="fin-table" id="holdingsTable">
+                <thead>
+                  <tr>
+                    <th>Ticker</th>
+                    <th class="text-right">Shares Owned</th>
+                    <th class="text-right">Avg Buy Price</th>
+                    <th class="text-right">Current Price</th>
+                    <th class="text-right">Total Market Value</th>
+                    <th class="text-right">Unrealized P&amp;L ($ / %)</th>
+                    <th class="text-center">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="holdingsTableBody">
+                  <!-- Populated by JavaScript -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Tab Panel: Order History -->
+          <div class="tab-panel" id="panelHistory" style="display: none;">
+            <div class="table-responsive">
+              <table class="fin-table" id="historyTable">
+                <thead>
+                  <tr>
+                    <th>Time / Date</th>
+                    <th>Ticker</th>
+                    <th>Side</th>
+                    <th>Order Type</th>
+                    <th class="text-right">Shares</th>
+                    <th class="text-right">Executed Price</th>
+                    <th class="text-right">Total Value</th>
+                    <th class="text-center">Status</th>
+                  </tr>
+                </thead>
+                <tbody id="historyTableBody">
+                  <!-- Populated by JavaScript -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Tab Panel: Watchlist -->
+          <div class="tab-panel" id="panelWatchlist" style="display: none;">
+            <div class="watchlist-grid" id="watchlistGrid">
+              <!-- Populated by JavaScript -->
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- RIGHT PERSISTENT ORDER EXECUTION WIDGET -->
+      <aside class="order-widget-container">
+        <div class="order-card sticky-card" id="orderExecutionWidget">
+          
+          <!-- Order Card Header -->
+          <div class="order-header">
+            <div class="order-header-left">
+              <h2 class="order-title">Place Order</h2>
+              <span class="order-ticker-badge" id="orderWidgetTicker">NVDA</span>
+            </div>
+            <div class="order-header-price">
+              <span class="order-cur-price tabular-num" id="orderWidgetPrice">$128.50</span>
+            </div>
+          </div>
+
+          <!-- Buy / Sell Mode Tabs -->
+          <div class="side-tab-toggle" id="sideTabToggle">
+            <button class="side-tab-btn active buy" id="btnSideBuy" data-side="BUY">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="18 15 12 9 6 15"></polyline>
+              </svg>
+              BUY
+            </button>
+            <button class="side-tab-btn sell" id="btnSideSell" data-side="SELL">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+              SELL
+            </button>
+          </div>
+
+          <!-- Order Form Body -->
+          <form class="order-form" id="orderForm" onsubmit="return false;">
+            
+            <!-- Order Type Selector -->
+            <div class="form-group">
+              <label for="orderTypeSelect" class="form-label">Order Type</label>
+              <div class="custom-select-wrapper">
+                <select id="orderTypeSelect" class="form-select">
+                  <option value="MARKET" selected>Market Order</option>
+                  <option value="LIMIT">Limit Order</option>
+                </select>
+                <div class="select-chevron">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            <!-- Limit Price Input (Shown only when LIMIT order selected) -->
+            <div class="form-group" id="limitPriceGroup" style="display: none;">
+              <div class="form-label-row">
+                <label for="limitPriceInput" class="form-label">Limit Price ($)</label>
+                <span class="field-hint">Trigger target</span>
+              </div>
+              <div class="input-currency-wrapper">
+                <span class="currency-prefix">$</span>
+                <input 
+                  type="number" 
+                  id="limitPriceInput" 
+                  class="form-input tabular-num" 
+                  step="0.01" 
+                  min="0.01" 
+                  placeholder="128.50"
+                >
+              </div>
+            </div>
+
+            <!-- Quantity Input -->
+            <div class="form-group">
+              <div class="form-label-row">
+                <label for="orderQuantityInput" class="form-label">Shares Quantity</label>
+                <span class="shares-avail-label tabular-num" id="sharesAvailLabel">Shares: 120 owned</span>
+              </div>
+              <div class="quantity-input-group">
+                <button type="button" class="btn-qty-step" id="btnQtyMinus" aria-label="Decrease quantity">-</button>
+                <input 
+                  type="number" 
+                  id="orderQuantityInput" 
+                  class="form-input text-center tabular-num font-bold" 
+                  value="10" 
+                  min="1" 
+                  max="100000"
+                  step="1"
+                >
+                <button type="button" class="btn-qty-step" id="btnQtyPlus" aria-label="Increase quantity">+</button>
+              </div>
+
+              <!-- Quick Increment Presets -->
+              <div class="quick-qty-pills">
+                <button type="button" class="qty-pill" data-add="10">+10</button>
+                <button type="button" class="qty-pill" data-add="50">+50</button>
+                <button type="button" class="qty-pill" data-add="100">+100</button>
+                <button type="button" class="qty-pill pill-max" id="btnQtyMax">MAX</button>
+              </div>
+            </div>
+
+            <!-- Calculation & Margin Breakdown Box -->
+            <div class="calc-breakdown-card">
+              <div class="calc-row">
+                <span class="calc-label">Execution Price</span>
+                <span class="calc-value tabular-num" id="calcExecutionPrice">$128.50</span>
+              </div>
+              <div class="calc-row">
+                <span class="calc-label">Est. Total Amount</span>
+                <span class="calc-value calc-total tabular-num" id="calcEstimatedTotal">$1,285.00</span>
+              </div>
+              <div class="calc-divider"></div>
+              <div class="calc-row">
+                <span class="calc-label" id="calcPowerLabel">Buying Power Available</span>
+                <span class="calc-value tabular-num" id="calcAvailablePower">$100,000.00</span>
+              </div>
+              <div class="calc-row">
+                <span class="calc-label">Estimated Post-Trade Cash</span>
+                <span class="calc-value tabular-num" id="calcPostCash">$98,715.00</span>
+              </div>
+              <div class="calc-row text-muted-sm">
+                <span class="calc-label">Commission / Fees</span>
+                <span class="calc-value">$0.00 (Paper)</span>
+              </div>
+            </div>
+
+            <!-- Real-time Order Error / Validation Alert -->
+            <div class="order-alert-box" id="orderAlertBox" style="display: none;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+              </svg>
+              <span id="orderAlertMsg">Insufficient Buying Power</span>
+            </div>
+
+            <!-- Primary Execute Order Action Button -->
+            <button type="button" class="btn-execute-order buy" id="btnPlaceOrder">
+              <span class="btn-text" id="btnOrderText">Place Buy Order</span>
+              <span class="btn-subtext tabular-num" id="btnOrderSubtext">&bull; $1,285.00</span>
+            </button>
+
+          </form>
+
+          <!-- Order Safety Badge -->
+          <div class="order-footer-note">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            </svg>
+            <span>Simulated Paper Execution &bull; Zero Real Risk</span>
+          </div>
+
+        </div>
+      </aside>
+
+    </main>
+
+    <!-- TOAST NOTIFICATION CONTAINER -->
+    <div class="toast-container" id="toastContainer" aria-live="polite"></div>
+
+  </div>
+
+  <!-- Main Vanilla JavaScript -->
+  <script src="script.js"></script>
+</body>
+</html>
